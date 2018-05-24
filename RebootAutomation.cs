@@ -25,8 +25,7 @@ namespace MachineRebootAutomation {
             string TVMuser = "machine_username";
             string TVMpass = "machine_password";
             PSToolsHandler PSTools = new PSToolsHandler(TVMuser, TVMpass, mailer);
-
-
+            
            //SQL query to get machine data
             string queryMachine = "SELECT Site, Machine, DomainAddress FROM DeviceStatus WHERE EquipmentType = 2";
             DataTable SQLresult = SQL.GetData(queryMachine);
@@ -39,10 +38,13 @@ namespace MachineRebootAutomation {
                 string SiteName = Machine.Field<string>("Site");
                 string MachineName = Machine.Field<string>("Machine");
 
-                PSTools.DeleteEODfilesAndReboot(DomainAddress);
+                if (NetworkHandler.pingTest(EquipmentIPAddress)) {
+                    PSTools.DeleteEODfilesAndReboot(DomainAddress);
+                }
 
             }); 
-
+            mailer.SendMail("toMail", "fromMail", "This is the subject", "This is the body");
+            
             // For user input before closing
             Console.ReadLine();
         }
